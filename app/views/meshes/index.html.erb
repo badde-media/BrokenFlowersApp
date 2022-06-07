@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Meshes</h1>
+
+<div id="meshes">
+  <% @meshes.each do |mesh| %>
+    <%= render mesh %>
+    <p>
+      <%= link_to "Show this mesh", mesh %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New mesh", new_mesh_path %>

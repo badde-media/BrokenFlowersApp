@@ -1,0 +1,32 @@
+<%= form_with(model: mesh) do |form| %>
+  <% if mesh.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(mesh.errors.count, "error") %> prohibited this mesh from being saved:</h2>
+
+      <ul>
+        <% mesh.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label :url, style: "display: block" %>
+    <%= form.text_field :url %>
+  </div>
+
+  <div>
+    <%= form.label :broken, style: "display: block" %>
+    <%= form.check_box :broken %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

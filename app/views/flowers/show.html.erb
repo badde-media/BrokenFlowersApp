@@ -1,0 +1,18 @@
+<p style="color: green"><%= notice %></p>
+<div id="container"></div>
+<div id="center" class="center">
+	<div class="w3-light-grey w3-round loader">
+		<div id="progressElement" class="w3-container w3-round w3-blue progressElement"></div>
+	</div>
+</div>
+
+<%= render partial: "3d_viewer" %>
+
+<%= render @flower %>
+
+<div>
+  <%= link_to "Edit this flower", edit_flower_path(@flower) %> |
+  <%= link_to "Back to flowers", flowers_path %>
+
+  <%= button_to "Destroy this flower", @flower, method: :delete %>
+</div>

@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @mesh %>
+
+<div>
+  <%= link_to "Edit this mesh", edit_mesh_path(@mesh) %> |
+  <%= link_to "Back to meshes", meshes_path %>
+
+  <%= button_to "Destroy this mesh", @mesh, method: :delete %>
+</div>

@@ -1,0 +1,137 @@
+html,
+body {
+	height: 100%;
+	width: 100%;
+}
+
+body {
+	/* remove margins and scroll bars */
+	margin: 0;
+	overflow: hidden;
+
+	/* style text */
+	text-align: center;
+	font-size: 12px;
+	font-family: Sans-Serif;
+
+	/* color text */
+	color: #444;
+	background-color: #000;
+}
+
+h1 {
+	/* position the heading */
+	position: absolute;
+	width: 100%;
+
+	/* make sure that the heading is drawn on top */
+	z-index: 1;
+}
+
+#scene-container {
+	/* tell our scene container to take up the full page */
+	position: absolute;
+	width: 100%;
+	height: 100%;
+
+	/*
+		Set the container's background color to the same as the scene's
+		background to prevent flashing on load
+	  */
+	background-color: #000;
+}
+
+.center {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+	border: none;
+	z-index: 10;
+}
+
+.loader {
+	height: 10px;
+	width: 200px;
+	/* border: 1px solid grey;
+	  text-align: left; */
+	padding: 2px;
+	z-index: 20;
+}
+
+.progressElement {
+	padding: 0;
+	color: blue;
+	height: 10px;
+	width: 1%;
+	z-index: 30;
+	/* display: block; */
+}
+
+.w3-container,
+.w3-panel {
+	/* padding: 0.01em 16px */
+}
+
+.w3-panel {
+	margin-top: 16px;
+	margin-bottom: 16px
+}
+
+.w3-container:after,
+.w3-container:before,
+.w3-panel:after,
+.w3-panel:before,
+.w3-row:after,
+.w3-row:before,
+.w3-row-padding:after,
+.w3-row-padding:before,
+.w3-cell-row:before,
+.w3-cell-row:after,
+.w3-clear:after,
+.w3-clear:before,
+.w3-bar:before,
+.w3-bar:after {
+	content: "";
+	display: table;
+	clear: both
+}
+
+.w3-blue,
+.w3-hover-blue:hover {
+	color: #fff !important;
+	background-color: #2196F3 !important
+}
+
+.w3-round-small {
+	border-radius: 2px
+}
+
+.w3-round,
+.w3-round-medium {
+	border-radius: 4px
+}
+
+.w3-round-large {
+	border-radius: 8px
+}
+
+.w3-round-xlarge {
+	border-radius: 16px
+}
+
+.w3-round-xxlarge {
+	border-radius: 32px
+}
+
+.w3-light-grey,
+.w3-hover-light-grey:hover,
+.w3-light-gray,
+.w3-hover-light-gray:hover {
+	color: #000 !important;
+	background-color: #f1f1f1 !important
+}

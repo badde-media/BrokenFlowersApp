@@ -1,0 +1,628 @@
+
+import * as THREE from 'three';
+
+import Stats from './vendor/three/examples/jsm/libs/stats.module.js';
+// import { GUI } from './vendor/three/examples/jsm/libs/lil-gui.module.min.js';
+import { GUI } from './vendor/three/examples/jsm/libs/dat.gui.module.js';
+import { GLTFLoader } from './vendor/three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from './vendor/three/examples/jsm/controls/OrbitControls.js';
+
+
+let scene, renderer, camera, stats;
+let model, skeleton, mixer, clock;
+
+const crossFadeControls = [];
+
+let idleAction, walkAction, runAction;
+let idleWeight, walkWeight, runWeight;
+let actions, settings;
+
+let singleStepMode = false;
+let sizeOfNextStep = 0;
+
+let textureEquirec;
+const black = new THREE.Color(0x000000);
+const white = new THREE.Color(0xFFFFFF);
+const gray = new THREE.Color(0x999999);
+
+init();
+
+// Creates random colors, output in #HEXRGB format.
+function getRandomColor() {
+	var letters = '0123456789ABCDEF';
+	var color = '#';
+	for (var i = 0; i < 6; i++) {
+		// Add 6 random elements of the letters string to the color string
+		color += letters[Math.floor(Math.random() * 16)];
+	}
+	return color;
+}
+
+function init() {
+
+	const container = document.getElementById( 'container' );
+
+	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
+	camera.position.set( 4, 3, -4 );
+	// camera.lookAt( 0, 3, 0 );
+
+	const controls = new OrbitControls(camera, container);
+
+	// damping and auto rotation require the controls to be updated each frame
+
+	// Uncomment the following line for the camera to automatically orbit
+	// controls.autoRotate = true;
+	controls.enableDamping = true;
+	controls.maxDistance = 40;
+	// controls.distance = 3;
+	// controls.object.position.set(camera.position.X, camera.position.Y, camera.position.Z);
+	controls.target = new THREE.Vector3(0,2.1,0);
+	camera.lookAt( controls.target );
+
+	const size = 10;
+	const divisions = 10;
+
+
+	clock = new THREE.Clock();
+
+	scene = new THREE.Scene();
+	// scene.background = new THREE.Color( 0xa0a0a0 );
+	// scene.fog = new THREE.Fog( 0xa0a0a0, 10, 50 );
+
+
+	const gridHelper = new THREE.GridHelper( size, divisions );
+	scene.add( gridHelper );
+
+	const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
+	hemiLight.position.set( 0, 20, 0 );
+	scene.add( hemiLight );
+
+	const dirLight = new THREE.DirectionalLight( 0xffffff );
+	dirLight.position.set( - 3, 10, - 10 );
+	dirLight.castShadow = true;
+	// dirLight.shadow.camera.top = 2;
+	// dirLight.shadow.camera.bottom = - 2;
+	// dirLight.shadow.camera.left = - 2;
+	// dirLight.shadow.camera.right = 2;
+	// dirLight.shadow.camera.near = 0.1;
+	// dirLight.shadow.camera.far = 40;
+	scene.add( dirLight );
+
+	// scene.add( new THREE.CameraHelper( dirLight.shadow.camera ) );
+
+	// ground
+
+	// const mesh = new THREE.Mesh( new THREE.PlaneGeometry( 100, 100 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+	// mesh.rotation.x = - Math.PI / 2;
+	// mesh.receiveShadow = true;
+	// scene.add( mesh );
+
+	var manager = new THREE.LoadingManager();
+	var progressElement = document.getElementById("progressElement");
+
+	manager.onStart = function (item, loaded, total) {
+		console.log('Loading started');
+	};
+	manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
+		console.log(url, itemsLoaded, itemsTotal);
+		console.log('Loaded:', Math.round(itemsLoaded / itemsTotal * 100, 2) + '%')
+		progressElement.style.width = (itemsLoaded / itemsTotal * 100) + '%';
+	};
+	manager.onLoad = function () {
+		console.log('Loading complete');
+		const center = document.getElementById("center");
+		center.remove();
+	};
+	manager.onError = function (url) {
+		console.log('Error loading');
+	};
+
+	const textureLoader = new THREE.TextureLoader(manager);
+
+	textureEquirec = textureLoader.load( './assets/textures/envmap.jpg' );
+	textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
+	textureEquirec.encoding = THREE.sRGBEncoding;
+
+	scene.background = black;
+
+	// let groundMap = texloader.load('./assets/models/textures/M_Ground_diffuse.png');
+	// let groundNormalMap = texloader.load('./assets/models/textures/M_Ground_normal.png');
+
+	// let tulipMap = texloader.load('./assets/models/textures/M_TulipFlower_diffuse.png');
+	// let tulipSpecMap = texloader.load('./assets/models/textures/M_TulipFlower_SpecularGlossiness.png');
+
+	// let groundMat = new THREE.MeshPhysicalMaterial({
+	// 	map: groundMap,
+	// 	normalMap: groundNormalMap
+	// });
+	// let tulipMat = new THREE.MeshPhysicalMaterial({
+	// 	map: tulipMap,
+	// 	roughnessMap: tulipSpecMap,
+	// 	// sheen: 0.75
+	// });
+
+	// function loadTexture(filename) {
+
+	// 	let path = './assets/models/textures/' + filename;
+	// 	// load a resource
+	// 	const tex = texloader.load(
+	// 		// resource URL
+	// 		path,
+
+	// 		// onError callback
+	// 		function ( err ) {
+	// 			console.error( 'A texture loading error happened.' );
+	// 		}
+	// 	);
+	// }
+	const loader = new GLTFLoader(manager);
+	loader.load( './assets/models/TulipanimationNoMod_Named.glb', function ( gltf ) {
+
+		model = gltf.scene;
+		scene.add( model );
+
+		model.traverse( function ( object ) {
+
+			if ( object.isMesh ) object.castShadow = true;
+			if ( object.name.includes("petal") && object.isMesh == true ) {
+				object.material.color.set(getRandomColor());
+			}
+			if ( object.name.includes("Plane") && object.isMesh == true ) {
+				object.visible = false;
+			}
+			// if ( object.name == "Tulip" ) {
+			// 	object.material = tulipMat;
+			// }
+
+		} );
+
+		//
+
+		// skeleton = new THREE.SkeletonHelper( model );
+		// skeleton.visible = false;
+		// scene.add( skeleton );
+
+		//
+
+		createPanel();
+
+
+		//
+
+		const animations = gltf.animations;
+		console.log(animations)
+		mixer = new THREE.AnimationMixer( model );
+
+		function playAnimations(animations, mixer) {
+			animations.forEach( function ( clip ) {
+				mixer.clipAction( clip ).clampWhenFinished = true;
+				mixer.clipAction( clip ).loop = THREE.LoopOnce;
+				mixer.clipAction( clip ).play();
+
+			} );
+			// if (mixer.existingAction(animations[32]))
+			// playAnimations(animations, mixer)
+		}
+		playAnimations(animations, mixer);
+		// mixer.setloop = THREE.LoopRepeat;
+		// idleAction = mixer.clipAction( animations[ 0 ] );
+		// // walkAction = mixer.clipAction( animations[ 3 ] );
+		// // runAction = mixer.clipAction( animations[ 1 ] );
+
+		// actions = [ idleAction ] //, walkAction, runAction ];
+
+		// activateAllActions();
+		// playAnimations(animations, mixer);
+		// mixer.clipAction.addEventListener( 'finished', function( e ) {
+		// 	mixer.clipAction(e).reset;
+		// 	playAnimations(animations, mixer);
+
+		// } ); // properties of e: type, action and direction
+
+		animate();
+
+	} );
+
+	renderer = new THREE.WebGLRenderer( { antialias: true } );
+	renderer.setPixelRatio( window.devicePixelRatio );
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.outputEncoding = THREE.sRGBEncoding;
+	renderer.shadowMap.enabled = true;
+	container.appendChild( renderer.domElement );
+
+	stats = new Stats();
+	container.appendChild( stats.dom );
+
+	window.addEventListener( 'resize', onWindowResize );
+
+}
+
+function createPanel() {
+
+	const params = {
+		Black: function () {
+
+			scene.background = black;
+
+		},
+		White: function () {
+
+			scene.background = white;
+
+		},
+		Gray: function () {
+
+			scene.background = gray;
+
+		},
+		Nature: function () {
+
+			scene.background = textureEquirec;
+
+		},
+	};
+
+	const panel = new GUI( { width: 310 } );
+
+	// 	const folder1 = panel.addFolder( 'Visibility' );
+	// 	const folder2 = panel.addFolder( 'Activation/Deactivation' );
+	// 	const folder3 = panel.addFolder( 'Pausing/Stepping' );
+	// 	const folder4 = panel.addFolder( 'Crossfading' );
+	// 	const folder5 = panel.addFolder( 'Blend Weights' );
+	const folder6 = panel.addFolder( 'General Speed' );
+	const folder7 = panel.addFolder( 'Background' );
+
+	settings = {
+		// 		'show model': true,
+		// 		'show skeleton': false,
+		// 		'deactivate all': deactivateAllActions,
+		// 		'activate all': activateAllActions,
+		// 		'pause/continue': pauseContinue,
+		// 		'make single step': toSingleStepMode,
+		// 		'modify step size': 0.05,
+		// 		'from walk to idle': function () {
+
+		// 			prepareCrossFade( walkAction, idleAction, 1.0 );
+
+		// 		},
+		// 		'from idle to walk': function () {
+
+		// 			prepareCrossFade( idleAction, walkAction, 0.5 );
+
+		// 		},
+		// 		'from walk to run': function () {
+
+		// 			prepareCrossFade( walkAction, runAction, 2.5 );
+
+		// 		},
+		// 		'from run to walk': function () {
+
+		// 			prepareCrossFade( runAction, walkAction, 5.0 );
+
+		// 		},
+		'use default duration': true,
+		'set custom duration': 3.5,
+		// 		'modify idle weight': 0.0,
+		// 		'modify walk weight': 1.0,
+		// 		'modify run weight': 0.0,
+		'modify time scale': 1.0
+	};
+
+	// 	folder1.add( settings, 'show model' ).onChange( showModel );
+	// 	folder1.add( settings, 'show skeleton' ).onChange( showSkeleton );
+	// 	folder2.add( settings, 'deactivate all' );
+	// 	folder2.add( settings, 'activate all' );
+	// 	folder3.add( settings, 'pause/continue' );
+	// 	folder3.add( settings, 'make single step' );
+	// 	folder3.add( settings, 'modify step size', 0.01, 0.1, 0.001 );
+	// 	crossFadeControls.push( folder4.add( settings, 'from walk to idle' ) );
+	// 	crossFadeControls.push( folder4.add( settings, 'from idle to walk' ) );
+	// 	crossFadeControls.push( folder4.add( settings, 'from walk to run' ) );
+	// 	crossFadeControls.push( folder4.add( settings, 'from run to walk' ) );
+	// 	folder4.add( settings, 'use default duration' );
+	// 	folder4.add( settings, 'set custom duration', 0, 10, 0.01 );
+	// 	folder5.add( settings, 'modify idle weight', 0.0, 1.0, 0.01 ).listen().onChange( function ( weight ) {
+
+	folder7.add( params, 'Black' );
+	folder7.add( params, 'White' );
+	folder7.add( params, 'Gray' );
+	folder7.add( params, 'Nature' );
+	// 		setWeight( idleAction, weight );
+
+	// } );
+	// 	folder5.add( settings, 'modify walk weight', 0.0, 1.0, 0.01 ).listen().onChange( function ( weight ) {
+
+	// 		setWeight( walkAction, weight );
+
+	// 	} );
+	// 	folder5.add( settings, 'modify run weight', 0.0, 1.0, 0.01 ).listen().onChange( function ( weight ) {
+
+	// 		setWeight( runAction, weight );
+
+	// 	} );
+	folder6.add( settings, 'modify time scale', 0.0, 1.5, 0.01 ).onChange( modifyTimeScale );
+
+	// folder1.open();
+	// folder2.open();
+	// folder3.open();
+	// folder4.open();
+	// folder5.open();
+	folder6.open();
+
+}
+
+
+// function showModel( visibility ) {
+
+// 	model.visible = visibility;
+
+// }
+
+
+// function showSkeleton( visibility ) {
+
+// 	skeleton.visible = visibility;
+
+// }
+
+
+function modifyTimeScale( speed ) {
+
+	mixer.timeScale = speed;
+
+}
+
+
+// function deactivateAllActions() {
+
+// 	actions.forEach( function ( action ) {
+
+// 		action.stop();
+
+// 	} );
+
+// }
+
+// function activateAllActions() {
+
+// 	// setWeight( idleAction, settings[ 'modify idle weight' ] );
+// 	// setWeight( walkAction, settings[ 'modify walk weight' ] );
+// 	// setWeight( runAction, settings[ 'modify run weight' ] );
+
+// 	actions.forEach( function ( action ) {
+
+// 		action.play();
+
+// 	} );
+
+// }
+
+function pauseContinue() {
+
+	if ( singleStepMode ) {
+
+		singleStepMode = false;
+		unPauseAllActions();
+
+	} else {
+
+		if ( idleAction.paused ) {
+
+			unPauseAllActions();
+
+		} else {
+
+			pauseAllActions();
+
+		}
+
+	}
+
+}
+
+function pauseAllActions() {
+
+	actions.forEach( function ( action ) {
+
+		action.paused = true;
+
+	} );
+
+}
+
+function unPauseAllActions() {
+
+	actions.forEach( function ( action ) {
+
+		action.paused = false;
+
+	} );
+
+}
+
+function toSingleStepMode() {
+
+	unPauseAllActions();
+
+	singleStepMode = true;
+	sizeOfNextStep = settings[ 'modify step size' ];
+
+}
+
+// function prepareCrossFade( startAction, endAction, defaultDuration ) {
+
+// 	// Switch default / custom crossfade duration (according to the user's choice)
+
+// 	const duration = setCrossFadeDuration( defaultDuration );
+
+// 	// Make sure that we don't go on in singleStepMode, and that all actions are unpaused
+
+// 	singleStepMode = false;
+// 	unPauseAllActions();
+
+// 	// If the current action is 'idle' (duration 4 sec), execute the crossfade immediately;
+// 	// else wait until the current action has finished its current loop
+
+// 	if ( startAction === idleAction ) {
+
+// 		executeCrossFade( startAction, endAction, duration );
+
+// 	} else {
+
+// 		synchronizeCrossFade( startAction, endAction, duration );
+
+// 	}
+
+// }
+
+// function setCrossFadeDuration( defaultDuration ) {
+
+// 	// Switch default crossfade duration <-> custom crossfade duration
+
+// 	if ( settings[ 'use default duration' ] ) {
+
+// 		return defaultDuration;
+
+// 	} else {
+
+// 		return settings[ 'set custom duration' ];
+
+// 	}
+
+// }
+
+// function synchronizeCrossFade( startAction, endAction, duration ) {
+
+// 	mixer.addEventListener( 'loop', onLoopFinished );
+
+// 	function onLoopFinished( event ) {
+
+// 		if ( event.action === startAction ) {
+
+// 			mixer.removeEventListener( 'loop', onLoopFinished );
+
+// 			executeCrossFade( startAction, endAction, duration );
+
+// 		}
+
+// 	}
+
+// }
+
+// function executeCrossFade( startAction, endAction, duration ) {
+
+// 	// Not only the start action, but also the end action must get a weight of 1 before fading
+// 	// (concerning the start action this is already guaranteed in this place)
+
+// 	setWeight( endAction, 1 );
+// 	endAction.time = 0;
+
+// 	// Crossfade with warping - you can also try without warping by setting the third parameter to false
+
+// 	startAction.crossFadeTo( endAction, duration, true );
+
+// }
+
+// This function is needed, since animationAction.crossFadeTo() disables its start action and sets
+// the start action's timeScale to ((start animation's duration) / (end animation's duration))
+
+// function setWeight( action, weight ) {
+
+// 	action.enabled = true;
+// 	action.setEffectiveTimeScale( 1 );
+// 	action.setEffectiveWeight( weight );
+
+// }
+
+// Called by the render loop
+
+// function updateWeightSliders() {
+
+// 	settings[ 'modify idle weight' ] = idleWeight;
+// 	settings[ 'modify walk weight' ] = walkWeight;
+// 	settings[ 'modify run weight' ] = runWeight;
+
+// }
+
+// Called by the render loop
+
+// function updateCrossFadeControls() {
+
+// 	if ( idleWeight === 1 && walkWeight === 0 && runWeight === 0 ) {
+
+// 		crossFadeControls[ 0 ].disable();
+// 		crossFadeControls[ 1 ].enable();
+// 		crossFadeControls[ 2 ].disable();
+// 		crossFadeControls[ 3 ].disable();
+
+// 	}
+
+// 	if ( idleWeight === 0 && walkWeight === 1 && runWeight === 0 ) {
+
+// 		crossFadeControls[ 0 ].enable();
+// 		crossFadeControls[ 1 ].disable();
+// 		crossFadeControls[ 2 ].enable();
+// 		crossFadeControls[ 3 ].disable();
+
+// 	}
+
+// 	if ( idleWeight === 0 && walkWeight === 0 && runWeight === 1 ) {
+
+// 		crossFadeControls[ 0 ].disable();
+// 		crossFadeControls[ 1 ].disable();
+// 		crossFadeControls[ 2 ].disable();
+// 		crossFadeControls[ 3 ].enable();
+
+// 	}
+
+// }
+
+function onWindowResize() {
+
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+
+	renderer.setSize( window.innerWidth, window.innerHeight );
+
+}
+
+function animate() {
+
+	// Render loop
+
+	requestAnimationFrame( animate );
+
+	// idleWeight = idleAction.getEffectiveWeight();
+	// walkWeight = walkAction.getEffectiveWeight();
+	// runWeight = runAction.getEffectiveWeight();
+
+	// Update the panel values if weights are modified from "outside" (by crossfadings)
+
+	// updateWeightSliders();
+
+	// Enable/disable crossfade controls according to current weight values
+
+	// updateCrossFadeControls();
+
+	// Get the time elapsed since the last frame, used for mixer update (if not in single step mode)
+
+	let mixerUpdateDelta = clock.getDelta();
+
+	// If in single step mode, make one step and then do nothing (until the user clicks again)
+
+	if ( singleStepMode ) {
+
+		mixerUpdateDelta = sizeOfNextStep;
+		sizeOfNextStep = 0;
+
+	}
+
+	// Update the animation mixer, the stats panel, and render this frame
+
+	mixer.update( mixerUpdateDelta );
+
+	stats.update();
+
+	renderer.render( scene, camera );
+
+}
