@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8c2ea0d8-3eec-4a46-9403-6762a94a6390" name="Changes" comment="Initial commit">
-      <change afterPath="$PROJECT_DIR$/app/assets/stylesheets/show_flowers.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/javascript/controllers/flower.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/views/flowers/_3d_viewer.html.erb" afterDir="false" />
+    <list default="true" id="8c2ea0d8-3eec-4a46-9403-6762a94a6390" name="Changes" comment="Threejs implementation running">
+      <change beforePath="$PROJECT_DIR$/.idea/BrokenFlowersApp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/BrokenFlowersApp.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/466f6ad5-7222-4f37-894c-e0a743c4ed8d.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/466f6ad5-7222-4f37-894c-e0a743c4ed8d.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.ruby-version" beforeDir="false" afterPath="$PROJECT_DIR$/.ruby-version" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/javascript/application.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/javascript/application.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/views/flowers/_3d_viewer.html.erb" beforeDir="false" afterPath="$PROJECT_DIR$/app/views/flowers/_3d_viewer.html.erb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/importmap.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/importmap.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -178,7 +183,13 @@
       <workItem from="1654552354448" duration="935000" />
       <workItem from="1654615174217" duration="3664000" />
       <workItem from="1654618866105" duration="1237000" />
-      <workItem from="1654620106830" duration="8159000" />
+      <workItem from="1654620106830" duration="9175000" />
+      <workItem from="1655059413661" duration="596000" />
+      <workItem from="1655295590311" duration="7713000" />
+      <workItem from="1655494863756" duration="595000" />
+      <workItem from="1655716606617" duration="192000" />
+      <workItem from="1656504800007" duration="993000" />
+      <workItem from="1656512013612" duration="4835000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1654550914094</created>
@@ -194,7 +205,14 @@
       <option name="project" value="LOCAL" />
       <updated>1654551017500</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Threejs implementation running">
+      <created>1654629453636</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1654629453636</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -213,9 +231,10 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial commit" />
+    <MESSAGE value="Threejs implementation running" />
+    <option name="LAST_COMMIT_MESSAGE" value="Threejs implementation running" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/BrokenFlowersApp@Development__BrokenFlowersApp.rcov" NAME="Development: BrokenFlowersApp Coverage Results" MODIFIED="1654624407491" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="BrokenFlowersApp" />
+    <SUITE FILE_PATH="coverage/BrokenFlowersApp@Development__BrokenFlowersApp.rcov" NAME="Development: BrokenFlowersApp Coverage Results" MODIFIED="1656519367011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="BrokenFlowersApp" />
   </component>
 </project>
