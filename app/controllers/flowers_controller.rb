@@ -1,5 +1,6 @@
 class FlowersController < ApplicationController
   before_action :set_flower, only: %i[ show edit update destroy ]
+  skip_before_action :require_login, only: [:show, :index]
 
   # GET /flowers or /flowers.json
   def index
@@ -12,6 +13,7 @@ class FlowersController < ApplicationController
 
   # GET /flowers/new
   def new
+
     @flower = Flower.new
   end
 
@@ -67,4 +69,6 @@ class FlowersController < ApplicationController
     def flower_params
       params.require(:flower).permit(:name, :mesh_id, :color_id, :hash_string, :broken )
     end
+
+
 end
