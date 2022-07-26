@@ -1,0 +1,20 @@
+<h1>Metamask Authentication</h1>
+<p>
+  <em>
+    Rails user-authentication demo purely using an ethereum account,
+    personal sign, and elliptic-curve recovery.
+  </em>
+</p>
+<p>
+  <% if !logged_in? %>
+    Hello, please
+    <%= link_to "sign up", signup_path %>
+    or
+    <%= link_to "log in", login_path %>?
+  <% else %>
+    Hello <%= current_user.username %>
+    <code><%= current_user.eth_address %></code>;
+    welcome! Do you wish to
+    <%= link_to "log out", logout_path, method: :destroy %>?
+  <% end %>
+</p>
