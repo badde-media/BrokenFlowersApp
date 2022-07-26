@@ -11,6 +11,9 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2022_05_30_174953) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "colors", force: :cascade do |t|
     t.string "hex"
     t.datetime "created_at", null: false
@@ -19,8 +22,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_30_174953) do
 
   create_table "flowers", force: :cascade do |t|
     t.string "name"
-    t.integer "mesh_id"
-    t.integer "color_id"
+    t.bigint "mesh_id"
+    t.bigint "color_id"
     t.string "hash_string"
     t.boolean "broken"
     t.datetime "created_at", null: false
