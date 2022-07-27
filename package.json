@@ -6,5 +6,9 @@
   },
   "devDependencies": {
     "webpack-dev-server": "^3"
+  },
+  "engines": {
+    "node": "18.2",
+    "npm": "8.9"
   }
 }
