@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "@openzeppelin/contracts": "^4.7.1",
     "@rails/webpacker": "5.4.3",
+    "g": "^2.0.1",
+    "solc": "^0.5.0",
     "webpack": "^4.46.0",
     "webpack-cli": "^3.3.12"
   },
