@@ -24,3 +24,4 @@ pin "three/examples/jsm/shaders/FXAAShader.js", to: "https://ga.jspm.io/npm:thre
 pin "three/examples/jsm/shaders/GammaCorrectionShader.js", to: "https://ga.jspm.io/npm:three@0.141.0/examples/jsm/shaders/GammaCorrectionShader.js", preload: true
 pin "three/src/helpers/AxesHelper.js", to: "https://ga.jspm.io/npm:three@0.141.0/src/helpers/AxesHelper.js", preload: true
 pin "three/src/textures/Data3DTexture.js", to: "https://ga.jspm.io/npm:three@0.141.0/src/textures/Data3DTexture.js", preload: true
+pin "@openzeppelin/", to: "node_modules/@openzeppelin/", preload: true
