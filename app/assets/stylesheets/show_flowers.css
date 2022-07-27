@@ -7,7 +7,7 @@ body {
 body {
 	/* remove margins and scroll bars */
 	margin: 0;
-	overflow: hidden;
+	/* overflow: hidden;*/
 
 	/* style text */
 	text-align: center;
@@ -21,7 +21,7 @@ body {
 
 h1 {
 	/* position the heading */
-	position: absolute;
+	/* position: absolute; */
 	width: 100%;
 
 	/* make sure that the heading is drawn on top */
